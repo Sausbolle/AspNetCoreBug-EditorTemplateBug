@@ -1,0 +1,96 @@
+﻿Validation data/information for Model not added to Tag when using EditorFor() and EditorTemplates
+
+
+
+### Describe the bug
+_Hopefully this is not just me doing it wrong_
+If you use EditorFor() and an EditorTemplate the `asp-for="@Model"` tag helper, or using any of the Html helpers like `TextBoxFor()`, don't add validation tags like `data-val-required` fields to the tag.
+The `ValidationMessageFor()` for the Model is displayed and added correctly (if there is model errors).
+
+### To Reproduce
+Create a Form Model
+```
+public class FormModel
+{
+    [Required]
+    [Display(Name = "Some Text Input")]
+    public string TextInput { get; set; }
+}
+```
+
+Create an EditorTemplate for string
+```
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model string
+
+@Html.ValidationMessageFor(m => m)
+@Html.TextBoxFor(m => m)
+```
+
+Create a Razor page that creates a form
+```
+@using (Html.BeginForm("Home", "Index", FormMethod.Post, true))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.TextInput)
+        @Html.ValidationMessageFor(m => m.TextInput)
+        @Html.TextBoxFor(m => m.TextInput)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.TextInput)
+        @Html.EditorFor(m => m.TextInput)
+    </div>
+}
+```
+
+The first tag created by `TextBoxFor()` will have the `data-val-required` tag.
+The second tag created by the `EditorFor()` and using the Editor Template will not have this, but it will show the ValidationMessageFor if there is any Model errors.
+
+### Further technical details
+- ASP.NET Core version 3.1.18
+- Include the output of `dotnet --info`
+```
+.NET SDK (reflecting any global.json):
+ Version:   5.0.400
+ Commit:    d61950f9bf
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.19043
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\5.0.400\
+
+Host (useful for support):
+  Version: 5.0.9
+  Commit:  208e377a53
+
+.NET SDKs installed:
+  3.1.412 [C:\Program Files\dotnet\sdk]
+  5.0.206 [C:\Program Files\dotnet\sdk]
+  5.0.303 [C:\Program Files\dotnet\sdk]
+  5.0.400 [C:\Program Files\dotnet\sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.All 2.1.29 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.29 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 3.1.2 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 3.1.18 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 5.0.9 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 2.1.29 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 3.1.2 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 3.1.18 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 5.0.9 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.WindowsDesktop.App 3.1.2 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 3.1.18 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 5.0.9 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+To install additional .NET runtimes or SDKs:
+  https://aka.ms/dotnet-download
+```
+- The IDE (VS / VS Code/ VS4Mac) you're running on, and its version
+Microsoft Visual Studio Community 2019
+Version 16.11.2

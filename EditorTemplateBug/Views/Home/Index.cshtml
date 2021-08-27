@@ -1,0 +1,42 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using EditorTemplateBug.ViewModels
+
+@model FormModel
+
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <title>Editor Template Bug</title>
+</head>
+<body>
+
+    @using (Html.BeginForm("Home", "Index", FormMethod.Post, true))
+    {
+        @Html.ValidationSummary(false);
+        <div class="form-group">
+            @Html.LabelFor(m => m.TextInput)
+            @Html.ValidationMessageFor(m => m.TextInput)
+            @Html.TextBoxFor(m => m.TextInput)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.TextInput)
+            @Html.EditorFor(m => m.TextInput)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.SelectedOption)
+            <select asp-for="SelectedOption" asp-items="Html.GetEnumSelectList<SelectOptionsEnum>()"></select>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.SelectedOption)
+            @Html.EditorFor(m => m.SelectedOption)
+        </div>
+
+        <button type="submit">Test Bug</button>
+    }
+
+<footer>
+    ASP.NET Core version: @System.Environment.Version (@System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription)
+</footer>
+</body>
+</html>
+
